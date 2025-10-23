@@ -1,6 +1,11 @@
 #!/usr/bin/env bun
 import { $ } from "bun";
 import { command, option, run, string, subcommands } from "cmd-ts";
+import { config } from "dotenv";
+import { resolve } from "path";
+
+// Load .env from the script's directory
+config({ path: resolve(import.meta.dir, ".env") });
 
 // Okta authentication command - runs the setup project
 const oktaCommand = command({
@@ -14,6 +19,7 @@ const oktaCommand = command({
       ["bunx", "playwright", "test", "--project=setup", "tests/okta.spec.ts"],
       {
         cwd: import.meta.dir,
+        env: process.env,
         stdin: "inherit",
         stdout: "inherit",
         stderr: "inherit",
