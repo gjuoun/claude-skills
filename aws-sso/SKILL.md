@@ -3,25 +3,43 @@ name: AWS SSO
 description: aws sso login to Okta and ECR with the built-in cli.
 ---
 
-Follow the steps login to aws sso Okta, and login to ECR registry with the built-in cli.
+🔐 AWS SSO and ECR authentication CLI tool
 
-Step 1. login to aws sso with the dev profile
+## Available Commands
 
+### 1. Okta Authentication
+Authenticate with Okta and save auth state:
 ```bash
-./aws-sso.ts dev
+aws-sso okta
 ```
 
-Step 2. parallal login to aws sso with the prod, qa, and ops profile
-
+### 2. AWS SSO Login
+Login to AWS SSO with a specific profile:
 ```bash
-./aws-sso.ts prod &
-./aws-sso.ts qa &
-./aws-sso.ts ops &
-wait
+# Login to dev profile
+aws-sso login --profile dev
+
+# Login to qa profile
+aws-sso login --profile qa
+
+# Login to prod profile
+aws-sso login --profile prod
+
+# Login to all profiles concurrently (dev, qa, prod)
+aws-sso login --profile all
 ```
 
-Step 3. Login to ECR with the ops profile
-
+### 3. ECR Docker Registry Login
+Login to AWS ECR registry:
 ```bash
-./ecr-login.ts
+aws-sso ecr-login
+```
+
+## Help
+
+Get help for any command:
+```bash
+aws-sso --help
+aws-sso login --help
+aws-sso ecr-login --help
 ```

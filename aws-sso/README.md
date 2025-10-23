@@ -28,7 +28,20 @@ Or use the npm script:
 bun run preinstall
 ```
 
-### 3. Configure Environment Variables
+### 3. Environment Variables
+
+Create a `.env` file with the following variables:
+
+```bash
+# Okta Configuration
+OKTA_HOME_PAGE=https://your-okta-domain.okta.com
+OKTA_USERNAME=your-username
+
+# AWS ECR Configuration
+ECR_AWS_REGION=us-east-1
+ECR_AWS_PROFILE=your-profile
+ECR_REGISTRY_URL=123456789.dkr.ecr.us-east-1.amazonaws.com
+```
 
 Copy the example environment file and fill in your values:
 
@@ -36,64 +49,76 @@ Copy the example environment file and fill in your values:
 cp .env.example .env
 ```
 
-Edit `.env` with your configuration:
+### 4. Link CLI Tool Globally
+
+Link the CLI tool globally to use `aws-sso` command from anywhere:
 
 ```bash
-# Okta Configuration
-OKTA_HOME_PAGE=https://your-org.okta.com/app/UserHome
-OKTA_USERNAME=your.email@company.com
-
-# AWS ECR Configuration
-ECR_AWS_REGION=us-west-2
-ECR_AWS_PROFILE=ops
-ECR_REGISTRY_URL=123456789012.dkr.ecr.us-west-2.amazonaws.com
+bun link
 ```
 
 ## Usage
 
-### AWS SSO Login
+### 1. Okta Authentication
+
+Authenticate with Okta and save auth state:
+
+```bash
+aws-sso okta
+```
+
+### 2. AWS SSO Login
 
 Login to AWS SSO with a specific profile:
 
 ```bash
-./aws-sso.ts dev
+# Login to dev profile
+aws-sso login --profile dev
+
+# Login to qa profile
+aws-sso login --profile qa
+
+# Login to prod profile
+aws-sso login --profile prod
+
+# Login to all profiles concurrently (dev, qa, prod)
+aws-sso login --profile all
 ```
 
-### Parallel SSO Login (Multiple Profiles)
-
-Login to multiple profiles simultaneously:
-
-```bash
-./aws-sso.ts prod &
-./aws-sso.ts qa &
-./aws-sso.ts ops &
-wait
-```
-
-### ECR Registry Login
+### 3. ECR Docker Registry Login
 
 Login to AWS ECR registry:
 
 ```bash
-bun --env-file=.env run ecr-login.ts
+aws-sso ecr-login
 ```
 
-Or make the file executable and run directly:
+### Help
+
+Get help for any command:
 
 ```bash
-chmod +x ecr-login.ts
-./ecr-login.ts
+aws-sso --help
+aws-sso login --help
+aws-sso ecr-login --help
 ```
 
 ## How It Works
 
-### AWS SSO Login (`aws-sso.ts`)
-1. Runs AWS CLI SSO login command
-2. Captures the device authorization URL
-3. Automates browser login through Okta
-4. Completes the authentication flow
+### Okta Authentication (`aws-sso okta`)
+1. Runs Playwright setup project
+2. Authenticates with Okta credentials
+3. Saves authentication state to `auth-state.json`
+4. Reuses cached auth state on subsequent runs
 
-### ECR Login (`ecr-login.ts`)
+### AWS SSO Login (`aws-sso login`)
+1. Runs AWS CLI SSO login command with `--no-browser`
+2. Captures the device authorization URL
+3. Automates browser login using cached Okta auth
+4. Completes the authentication flow
+5. When using `--profile all`, runs all profiles concurrently
+
+### ECR Login (`aws-sso ecr-login`)
 1. Loads credentials from environment variables
 2. Gets ECR login password via AWS CLI
 3. Authenticates Docker with ECR registry
@@ -118,11 +143,7 @@ rm auth-state.json
 
 ### Environment Variables Not Loading
 
-Make sure to run ECR login with the `--env-file` flag:
-
-```bash
-bun --env-file=.env run ecr-login.ts
-```
+Bun automatically loads `.env` files. If you still have issues, ensure your `.env` file is in the correct directory and properly formatted.
 
 ## Security Notes
 

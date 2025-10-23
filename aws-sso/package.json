@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "bin": {
-    "aws-sso": "./aws-sso.ts",
-    "ecr-login": "./ecr-login.ts"
+    "aws-sso": "./cli.ts"
   },
   "scripts": {
     "preinstall": "bunx playwright install chromium",
@@ -23,5 +22,8 @@
   "private": true,
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "cmd-ts": "^0.14.3"
   }
 }
