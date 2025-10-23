@@ -41,7 +41,7 @@ export default defineConfig({
         // Use signed-in state
         storageState: "auth-state.json",
       },
-      // dependencies: ["setup"],
+      dependencies: ["setup"],
       testIgnore: ["**/okta.spec.ts"],
     },
 

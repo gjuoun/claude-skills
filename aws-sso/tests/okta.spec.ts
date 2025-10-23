@@ -80,9 +80,7 @@ setup("authenticate", async ({ page }) => {
   // Perform login
   await page.goto(OKTA_HOME_PAGE);
 
-  await page
-    .getByRole("textbox", { name: "Username" })
-    .fill(OKTA_USERNAME);
+  await page.getByRole("textbox", { name: "Username" }).fill(OKTA_USERNAME);
   await page.getByText("Keep me signed in").click();
   await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("link", { name: "Select to get a push" }).click();

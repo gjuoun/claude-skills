@@ -59,11 +59,10 @@ const loginCommand = command({
           profile: p,
           proc: Bun.spawn(
             [
-              "bunx",
-              "playwright",
+              "bun",
+              "run",
               "test",
               "--project=chromium",
-              "tests/aws-sso.spec.ts",
             ],
             {
               cwd: import.meta.dir,
@@ -104,11 +103,10 @@ const loginCommand = command({
 
       const proc = Bun.spawn(
         [
-          "bunx",
-          "playwright",
+          "bun",
+          "run",
           "test",
           "--project=chromium",
-          "tests/aws-sso.spec.ts",
         ],
         {
           cwd: import.meta.dir,
