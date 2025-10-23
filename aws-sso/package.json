@@ -1,0 +1,27 @@
+{
+  "name": "aws-sso-skill",
+  "version": "1.0.0",
+  "main": "index.js",
+  "bin": {
+    "aws-sso": "./aws-sso.ts",
+    "ecr-login": "./ecr-login.ts"
+  },
+  "scripts": {
+    "preinstall": "bunx playwright install chromium",
+    "test": "bun --env-file=.env run playwright test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/bun": "latest",
+    "@types/node": "^24.9.1",
+    "dotenv": "^17.2.3"
+  },
+  "private": true,
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
