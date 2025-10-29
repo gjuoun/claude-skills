@@ -4,28 +4,33 @@ description: Update apps with Brew to the latest version.
 ---
 
 upgrade these apps, use brew to upgrade unless otherwise specified:
-preferred to use one line commands to upgrade.
-example: `brew upgrade app1 app2 app3`
+
+- you can upgrade multiple apps in a single command, but formulas and casks cannot be mixed:
+  - Multiple formulas: `brew upgrade app1 app2 app3`
+  - Multiple casks: `brew upgrade --cask app1 app2 app3`
+  - Mixed (formulas + casks): Use separate commands for each type
+- if other tools are mentioned, use the tool to upgrade. Example: `rustup update`
+- if an app is installed at `/Applications/<app-name>` remove the current install and replace it with the new one
 
 <apps>
-codex
-claudue-code
-visual-studio-code
-cursor
-ghostty
-cherry-studio
-DataGrip
-bruno
+codex --cask
+claude-code --cask
+visual-studio-code --cask
+cursor --cask
+ghostty --cask
+cherry-studio --cask
+datagrip --cask
+bruno --cask
 bruno-cli
-orbstack
+orbstack --cask
 podman
-podman-desktop
+podman-desktop --cask
 fnm
 bun
-amazon-q
+amazon-q --cask
 opencode
 uv
-obsidian
+obsidian --cask
 hurl
-rust(with rustup)
+rust (with `rustup update`)
 </apps>

@@ -43,8 +43,8 @@ async function isAuthStateValid(page: Page) {
       });
 
       // Check if we're still logged in by looking for the user button
-      const dashboard = testPage?.getByRole("heading", { name: "Dashboard" });
-      const isLoggedIn = await dashboard?.isVisible({ timeout: 5000 });
+      const myApps = testPage?.getByRole('link', { name: 'My Apps' })
+      const isLoggedIn = await myApps?.isVisible({ timeout: 5000 });
 
       await context?.close();
 
@@ -85,7 +85,7 @@ setup("authenticate", async ({ page }) => {
   await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("link", { name: "Select to get a push" }).click();
   await page.waitForURL(OKTA_HOME_PAGE);
-  await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'My Apps' })).toBeVisible();
 
   // Save authentication state
   await page.context().storageState({ path: authFile });
