@@ -20,11 +20,7 @@ cursor --cask
 ghostty --cask
 cherry-studio --cask
 datagrip --cask
-bruno --cask
-bruno-cli
 orbstack --cask
-podman
-podman-desktop --cask
 fnm
 bun
 amazon-q --cask
