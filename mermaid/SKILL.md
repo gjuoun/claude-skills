@@ -131,8 +131,10 @@ Use this one-liner to validate Mermaid syntax with automatic cleanup:
 
 ```bash
 # Create temp files with proper extensions
-TEMP_MMD=$(mktemp /tmp/mermaid.XXXXXX.mmd)
-TEMP_OUT=$(mktemp /tmp/mermaid-out.XXXXXX.svg)
+mkdir -p ./tmp
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+TEMP_MMD="./tmp/mermaid_${TIMESTAMP}.mmd"
+TEMP_OUT="./tmp/mermaid-out_${TIMESTAMP}.svg"
 
 # Write diagram to temp file
 cat > "$TEMP_MMD" << 'EOF'
@@ -160,8 +162,10 @@ rm "$TEMP_MMD" "$TEMP_OUT" 2>/dev/null
 ```bash
 validate_mermaid() {
     local mermaid_code="$1"
-    local temp_mmd=$(mktemp /tmp/mermaid.XXXXXX.mmd)
-    local temp_out=$(mktemp /tmp/mermaid-out.XXXXXX.svg)
+    mkdir -p ./tmp
+    local timestamp=$(date +%Y%m%d_%H%M%S)
+    local temp_mmd="./tmp/mermaid_${timestamp}.mmd"
+    local temp_out="./tmp/mermaid-out_${timestamp}.svg"
 
     echo "$mermaid_code" > "$temp_mmd"
 
@@ -185,10 +189,12 @@ validate_mermaid "graph TD; A-->B;"
 
 ```bash
 # Pipe diagram from stdin
-echo "graph TD; A-->B;" | mmdc -i - -o /tmp/test.svg && echo "✅ Valid" || echo "❌ Invalid"
+mkdir -p ./tmp
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+echo "graph TD; A-->B;" | mmdc -i - -o "./tmp/test_${TIMESTAMP}.svg" && echo "✅ Valid" || echo "❌ Invalid"
 
 # Using heredoc
-mmdc -i - -o /tmp/test.svg << 'EOF'
+mmdc -i - -o "./tmp/test_${TIMESTAMP}.svg" << 'EOF'
 graph TD
     A[Start] --> B[End]
 EOF
@@ -260,7 +266,8 @@ mmdc -i input.mmd -o output.svg  # or .png, .pdf, .md
 
 **mktemp syntax**
 - ❌ GNU/Linux only: `mktemp --suffix=.mmd`
-- ✅ Portable (macOS/Linux): `mktemp /tmp/mermaid.XXXXXX.mmd`
+- ❌ Random suffixes: `mktemp ./tmp/mermaid.XXXXXX.mmd`
+- ✅ Datetime-based naming: `./tmp/mermaid_$(date +%Y%m%d_%H%M%S).mmd`
 
 **Cleanup recommendations**
 - Always use `2>/dev/null` when removing temp files to suppress errors
@@ -284,8 +291,10 @@ flowchart TD
 2. **Validate with portable command**:
 
 ```bash
-TEMP_MMD=$(mktemp /tmp/mermaid.XXXXXX.mmd)
-TEMP_OUT=$(mktemp /tmp/mermaid-out.XXXXXX.svg)
+mkdir -p ./tmp
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+TEMP_MMD="./tmp/mermaid_${TIMESTAMP}.mmd"
+TEMP_OUT="./tmp/mermaid-out_${TIMESTAMP}.svg"
 
 cat > "$TEMP_MMD" << 'EOF'
 flowchart TD
