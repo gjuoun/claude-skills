@@ -24,7 +24,6 @@ orbstack --cask
 fnm
 bun
 amazon-q --cask
-opencode
 uv
 obsidian --cask
 hurl

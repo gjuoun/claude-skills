@@ -11,14 +11,36 @@ This skill requires `mmdc` (mermaid-cli) to be installed. If you don't have it i
 npm install -g @mermaid-js/mermaid-cli
 ```
 
+**Quick Start:** The included `mermaid.sh` script provides a simple interface for validation without needing to remember complex mmdc commands.
+
 ## When to Use This Skill
 
 When asked to create a Mermaid diagram, follow this workflow:
 
 1. **Analyze the request** - Determine the most appropriate diagram type
 2. **Generate clean Mermaid syntax**
-3. **Validate the syntax** using temporary files
+3. **Validate the syntax** using temporary files or the provided script
 4. **Present the validated diagram** with brief explanation
+
+## Quick Start with Script
+
+**Easiest Method:** Use the included `mermaid.sh` script!
+
+The `mermaid.sh` script handles all temporary file creation, validation, and cleanup automatically.
+
+```bash
+# Validate from command line
+./mermaid.sh "flowchart TD; A[Start] --> B[End]"
+
+# Validate from a file
+./mermaid.sh -f my-diagram.mmd
+
+# Validate from stdin
+echo "graph TD; A --> B;" | ./mermaid.sh
+
+# Show help
+./mermaid.sh --help
+```
 
 ## Diagram Types
 
@@ -125,79 +147,33 @@ flowchart TD
 
 ## Validation Workflow
 
-### Quick Validation (Portable - Works on macOS and Linux)
+### Easiest Method: Use the Script
 
-Use this one-liner to validate Mermaid syntax with automatic cleanup:
+**Recommended:** Use the included `mermaid.sh` script instead of manual commands:
 
 ```bash
-# Create temp files with proper extensions
-mkdir -p ./tmp
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-TEMP_MMD="./tmp/mermaid_${TIMESTAMP}.mmd"
-TEMP_OUT="./tmp/mermaid-out_${TIMESTAMP}.svg"
-
-# Write diagram to temp file
-cat > "$TEMP_MMD" << 'EOF'
-graph TD
-    A[Start] --> B{Decision}
-    B -->|Yes| C[Action]
-    B -->|No| D[End]
-    C --> D
-EOF
-
-# Validate (mmdc exits 0 on success, non-zero on error)
-if mmdc -i "$TEMP_MMD" -o "$TEMP_OUT" -q 2>/dev/null; then
-    echo "✅ Valid Mermaid syntax"
-else
-    echo "❌ Invalid Mermaid syntax"
-    mmdc -i "$TEMP_MMD" -o "$TEMP_OUT" 2>&1  # Show error details
-fi
-
-# Cleanup
-rm "$TEMP_MMD" "$TEMP_OUT" 2>/dev/null
+./mermaid.sh "your mermaid code here"
 ```
 
-### Validation Function (For Repeated Use)
+The script handles all temporary file creation, validation, and cleanup automatically. See "Quick Start with Script" section above for more examples.
+
+### Manual Validation (For Advanced Users)
+
+If you need to customize the validation process or understand how it works, see the advanced sections below:
+
+#### Quick Validation Examples
+
+Instead of writing complex bash scripts, simply use the script:
 
 ```bash
-validate_mermaid() {
-    local mermaid_code="$1"
-    mkdir -p ./tmp
-    local timestamp=$(date +%Y%m%d_%H%M%S)
-    local temp_mmd="./tmp/mermaid_${timestamp}.mmd"
-    local temp_out="./tmp/mermaid-out_${timestamp}.svg"
+# From command line
+./mermaid.sh "graph TD; A[Start] --> B[End]"
 
-    echo "$mermaid_code" > "$temp_mmd"
+# From stdin
+echo "graph TD; A[Start] --> B[End]" | ./mermaid.sh
 
-    if mmdc -i "$temp_mmd" -o "$temp_out" -q 2>/dev/null; then
-        echo "✅ Mermaid syntax is valid"
-        rm "$temp_mmd" "$temp_out"
-        return 0
-    else
-        echo "❌ Mermaid syntax error:"
-        mmdc -i "$temp_mmd" -o "$temp_out" 2>&1
-        rm "$temp_mmd" "$temp_out" 2>/dev/null
-        return 1
-    fi
-}
-
-# Usage
-validate_mermaid "graph TD; A-->B;"
-```
-
-### Validating from stdin
-
-```bash
-# Pipe diagram from stdin
-mkdir -p ./tmp
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-echo "graph TD; A-->B;" | mmdc -i - -o "./tmp/test_${TIMESTAMP}.svg" && echo "✅ Valid" || echo "❌ Invalid"
-
-# Using heredoc
-mmdc -i - -o "./tmp/test_${TIMESTAMP}.svg" << 'EOF'
-graph TD
-    A[Start] --> B[End]
-EOF
+# From file
+./mermaid.sh -f my-diagram.mmd
 ```
 
 ## Common Errors and Fixes
@@ -251,27 +227,25 @@ A --> B
 - See [Linux sandbox issue](https://github.com/mermaid-js/mermaid-cli/blob/master/docs/linux-sandbox-issue.md)
 - See [Docker permission denied issue](https://github.com/mermaid-js/mermaid-cli/blob/master/docs/docker-permission-denied.md)
 
-**Output file extension required**
-```bash
-# ❌ WRONG - No extension or invalid path
-mmdc -i input.mmd -o /dev/null
-
-# ✅ CORRECT - Use valid extension
-mmdc -i input.mmd -o output.svg  # or .png, .pdf, .md
-```
+**Using the script avoids these issues:**
+The `mermaid.sh` script automatically handles temporary file creation with proper extensions, so you don't need to worry about file paths or extensions.
 
 ## Platform Compatibility Notes
 
-### macOS vs Linux Differences
+### macOS vs Linux
 
-**mktemp syntax**
+**The `mermaid.sh` script works on both macOS and Linux** without any platform-specific code. It uses:
+
+- Datetime-based temporary file naming (compatible with both platforms)
+- Automatic cleanup with proper error suppression
+- Portable bash syntax
+
+**Platform-specific notes (for direct mmdc usage only):**
 - ❌ GNU/Linux only: `mktemp --suffix=.mmd`
 - ❌ Random suffixes: `mktemp ./tmp/mermaid.XXXXXX.mmd`
 - ✅ Datetime-based naming: `./tmp/mermaid_$(date +%Y%m%d_%H%M%S).mmd`
 
-**Cleanup recommendations**
-- Always use `2>/dev/null` when removing temp files to suppress errors
-- Example: `rm "$TEMP_FILE" 2>/dev/null`
+**For most users:** Simply use the `mermaid.sh` script and these platform differences won't affect you.
 
 ## Example Workflows
 
@@ -288,15 +262,16 @@ flowchart TD
     D --> E
 ```
 
-2. **Validate with portable command**:
+2. **Validate using the script**:
 
 ```bash
-mkdir -p ./tmp
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-TEMP_MMD="./tmp/mermaid_${TIMESTAMP}.mmd"
-TEMP_OUT="./tmp/mermaid-out_${TIMESTAMP}.svg"
+./mermaid.sh "flowchart TD; A[Start] --> B{Check Condition}; B -->|True| C[Process A]; B -->|False| D[Process B]; C --> E[End]; D --> E"
+```
 
-cat > "$TEMP_MMD" << 'EOF'
+Or save to a file and validate:
+
+```bash
+cat > flowchart.mmd << 'EOF'
 flowchart TD
     A[Start] --> B{Check Condition}
     B -->|True| C[Process A]
@@ -305,8 +280,7 @@ flowchart TD
     D --> E
 EOF
 
-mmdc -i "$TEMP_MMD" -o "$TEMP_OUT" -q && echo "✅ Valid" || echo "❌ Invalid"
-rm "$TEMP_MMD" "$TEMP_OUT" 2>/dev/null
+./mermaid.sh -f flowchart.mmd
 ```
 
 ### Creating a Sequence Diagram
@@ -350,11 +324,11 @@ When presenting validated diagrams:
 1. Provide the Mermaid code in a code block with \`\`\`mermaid
 2. Include brief explanation of the diagram structure
 3. Mention validation result: "✅ Valid Mermaid syntax"
-4. For errors, show the specific error message from mmdc
+4. For errors, the script will display the specific error message from mmdc
 
-## Command Line Options
+## Advanced: Direct mmdc Usage (For Custom Workflows)
 
-Useful mmdc flags:
+If you need to use mmdc directly for custom workflows (e.g., generating specific output formats or using advanced configuration), here are the useful flags:
 
 - `-i, --input <file>` - Input file (use `-` for stdin)
 - `-o, --output <file>` - Output file (.svg, .png, .pdf, .md)
@@ -368,6 +342,8 @@ Example with options:
 ```bash
 mmdc -i input.mmd -o output.png -t dark -b transparent -q
 ```
+
+**Note:** For most use cases, the `mermaid.sh` script is simpler and handles temporary files automatically. Use direct mmdc commands only when you need specific output formats or advanced configuration.
 
 ## References
 
