@@ -19,7 +19,9 @@ pm2 list
 ```
 
 **View logs:**
+
 ```bash
+# be sure to use `--nostream`, otherwise the process will hang
 pm2 -n app-name log --nostream --lines 50
 ```
 
@@ -66,17 +68,3 @@ module.exports = {
   }]
 };
 ```
-
-## Troubleshooting
-
-### Process Issues
-If the process keeps restarting:
-1. Check logs with `pm2 -n app-name log --nostream --lines 100`
-2. Look for "too many unstable restarts" errors
-3. Verify Maven dependencies are available
-4. Check if port 18088 is already in use
-
-### Common Problems
-- **Maven not found**: Ensure Maven is installed and in PATH
-- **Port conflicts**: Check if another process is using port 18088
-- **Memory issues**: Increase `max_memory_restart` in config
