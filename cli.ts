@@ -152,6 +152,7 @@ const addCommand = command({
     }),
     skillSet: flag({
       long: "skill-set",
+      short: "S",
       description: "Treat the skill name as a skill set from cc-skill.json",
     }),
   },
@@ -266,6 +267,7 @@ const removeCommand = command({
     }),
     skillSet: flag({
       long: "skill-set",
+      short: "S",
       description: "Treat the skill name as a skill set from cc-skill.json",
     }),
   },
@@ -355,14 +357,31 @@ const listCommand = command({
       return;
     }
 
-    console.log(`Skills in ${SKILLS_DIR}:\n`);
-    skills.forEach(skill => {
-      let status = "";
-      if (skill.linked) {
-        status += skill.local ? " (installed, local)" : " (installed)";
+    // Display skill sets
+    const config = await readSkillSetConfig();
+    if (config && Object.keys(config.skill_set).length > 0) {
+      console.log(`Skill Sets:\n`);
+
+      for (const [setName, skillNames] of Object.entries(config.skill_set)) {
+        console.log(`  ${setName}:`);
+
+        for (const skillName of skillNames) {
+          const skill = skills.get(skillName);
+
+          if (!skill) {
+            console.log(`    - ${skillName} (not found)`);
+          } else if (skill.linked) {
+            const status = skill.local ? " (installed, local)" : " (installed)";
+            console.log(`    - ${skillName}${status}`);
+          } else {
+            console.log(`    - ${skillName} (not installed)`);
+          }
+        }
+        console.log("");
       }
-      console.log(`  ${skill.name}${status}`);
-    });
+    } else {
+      console.log("No skill sets found in cc-skill.json");
+    }
   },
 });
 
