@@ -29,14 +29,13 @@ When asked to create a Mermaid diagram, follow this workflow:
 The `mermaid.sh` script handles all temporary file creation, validation, and cleanup automatically.
 
 ```bash
-# Validate from command line
-./mermaid.sh "flowchart TD; A[Start] --> B[End]"
-
-# Validate from a file
-./mermaid.sh -f my-diagram.mmd
-
-# Validate from stdin
-echo "graph TD; A --> B;" | ./mermaid.sh
+# Create a temp diagram and validate
+cat > ./tmp/diagram.mmd << 'EOF'
+flowchart TD
+    A[Start] --> B[End]
+EOF
+./mermaid.sh -f ./tmp/diagram.mmd
+rm ./tmp/diagram.mmd
 
 # Show help
 ./mermaid.sh --help
@@ -149,13 +148,18 @@ flowchart TD
 
 ### Easiest Method: Use the Script
 
-**Recommended:** Use the included `mermaid.sh` script instead of manual commands:
+**Recommended:** Use the included `mermaid.sh` script with file validation:
 
 ```bash
-./mermaid.sh "your mermaid code here"
+# Create temp diagram in ./tmp
+cat > ./tmp/diagram.mmd << 'EOF'
+your mermaid code here
+EOF
+./mermaid.sh -f ./tmp/diagram.mmd
+rm ./tmp/diagram.mmd
 ```
 
-The script handles all temporary file creation, validation, and cleanup automatically. See "Quick Start with Script" section above for more examples.
+The script validates the diagram file and provides clear error messages. See "Quick Start with Script" section above for more examples.
 
 ### Manual Validation (For Advanced Users)
 
@@ -163,17 +167,16 @@ If you need to customize the validation process or understand how it works, see 
 
 #### Quick Validation Examples
 
-Instead of writing complex bash scripts, simply use the script:
+Instead of writing complex bash scripts, simply create a temp file and validate:
 
 ```bash
-# From command line
-./mermaid.sh "graph TD; A[Start] --> B[End]"
-
-# From stdin
-echo "graph TD; A[Start] --> B[End]" | ./mermaid.sh
-
-# From file
-./mermaid.sh -f my-diagram.mmd
+# Create temp diagram and validate
+cat > ./tmp/diagram.mmd << 'EOF'
+graph TD
+    A[Start] --> B[End]
+EOF
+./mermaid.sh -f ./tmp/diagram.mmd
+rm ./tmp/diagram.mmd
 ```
 
 ## Common Errors and Fixes
@@ -262,16 +265,10 @@ flowchart TD
     D --> E
 ```
 
-2. **Validate using the script**:
+2. **Validate using the script with a temp file**:
 
 ```bash
-./mermaid.sh "flowchart TD; A[Start] --> B{Check Condition}; B -->|True| C[Process A]; B -->|False| D[Process B]; C --> E[End]; D --> E"
-```
-
-Or save to a file and validate:
-
-```bash
-cat > flowchart.mmd << 'EOF'
+cat > ./tmp/flowchart.mmd << 'EOF'
 flowchart TD
     A[Start] --> B{Check Condition}
     B -->|True| C[Process A]
@@ -280,7 +277,8 @@ flowchart TD
     D --> E
 EOF
 
-./mermaid.sh -f flowchart.mmd
+./mermaid.sh -f ./tmp/flowchart.mmd
+rm ./tmp/flowchart.mmd
 ```
 
 ### Creating a Sequence Diagram
