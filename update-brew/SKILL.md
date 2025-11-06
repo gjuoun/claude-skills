@@ -13,7 +13,7 @@ upgrade these apps, use brew to upgrade unless otherwise specified:
 - if an app is installed at `/Applications/<app-name>` remove the current install and replace it with the new one
 
 <apps>
-codex --cask
+codex
 claude-code --cask
 visual-studio-code --cask
 cursor --cask
@@ -28,4 +28,7 @@ uv
 obsidian --cask
 hurl
 rust (with `rustup update`)
+awscli
+biome
+pnpm
 </apps>

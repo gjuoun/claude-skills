@@ -83,7 +83,11 @@ validate_mermaid() {
     # Write diagram to temporary file
     echo "$mermaid_code" > "$temp_mmd"
 
-    # Validate using mmdc
+    # Validate using mmdc with Chrome flags to suppress permission prompts
+    # The script always uses these flags to prevent Chrome/Puppeteer from asking for permissions
+    export PUPPETEER_NO_SANDBOX=true
+    export CHROME_FLAGS="--disable-dev-shm-usage --disable-web-security --disable-features=WebUSB,WebBluetooth --no-sandbox --disable-setuid-sandbox --disable-extensions --mute-audio --disable-software-rasterizer"
+
     if mmdc -i "$temp_mmd" -o "$temp_out" -q 2>/dev/null; then
         echo -e "${GREEN}✅ Valid Mermaid syntax${NC}"
         rm -f "$temp_mmd" "$temp_out" 2>/dev/null || true
