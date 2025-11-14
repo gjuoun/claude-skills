@@ -31,4 +31,5 @@ rust (with `rustup update`)
 awscli
 biome
 pnpm
+warp --cask
 </apps>
